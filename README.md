@@ -7,3 +7,9 @@ I used the following third party technologies for developing this app: they real
 * Apache Cordova
 * Apache Cordova plugins: cordova-plugin-dialogs, cordova-plugin-device, cordova-clipboard, cordova-plugin-x-socialsharing, cordova-plugin-geolocation, cordova-plugin-app-exit cordova-plugin-insomnia
 * W3.CSS by W3Schools
+
+## How to build
+blablabla
+
+## Supported platforms
+* Android
