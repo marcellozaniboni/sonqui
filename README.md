@@ -1,4 +1,4 @@
-# sonqui
+# About sonqui
 a small "one-tap app" for sharing quickly geolocation data with map links
 This software is provided under the terms of the GNU General Public License (GPL) version 2. You can find more details here [gnu.org/licenses](https://www.gnu.org/licenses/).
 I used the following third party technologies for developing this app: they really simplified the job, so thank you very very much!
