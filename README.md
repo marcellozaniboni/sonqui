@@ -45,7 +45,7 @@ cordova build
 cordova build --release
 ```
 
-You find the built APKs in `platforms/android/app/build/outputs/apk/`
+You'll find the output APKs in `platforms/android/app/build/outputs/apk/`
 
 ## Supported platforms
 * Android
