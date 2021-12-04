@@ -25,7 +25,7 @@ cordova plugin add cordova-plugin-geolocation
 
 Now you can get the files from GitHub and copy/replace them in the project directory.
 
-For testing you can run the app in a web browser using
+For testing quickly you can run the app in a web browser using
 
 ```
 cordova clean
@@ -34,6 +34,16 @@ cordova run browser
 ```
 
 in the web browser the app will run with limited functionalities.
+
+You can build the Android app like this:
+
+```
+cordova clean
+cordova build
+cordova build --release
+```
+
+You find the built APKs in `platforms/android/app/build/outputs/apk/`
 
 ## Supported platforms
 * Android
