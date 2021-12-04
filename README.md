@@ -35,7 +35,7 @@ cordova build browser
 cordova run browser
 ```
 
-in the web browser the app will run with limited functionalities.
+...however in the web browser the app will run with limited functionalities.
 
 You can build the Android app like this:
 
