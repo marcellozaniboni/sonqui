@@ -2,6 +2,9 @@
 sonqui is a small "one-tap app" for Android sharing quickly geolocation data with map links.
 It gets the detailed technical geolocation data and generates map links for Google Maps, OpenStreetMap, Bing Maps, and Yandex Maps. It can also be used as a real-time speedometer.
 
+![screenshot](assets/screenshot_sonqui_01.jpg)
+![screenshot](assets/screenshot_sonqui_02.jpg)
+
 This software displays no ads and is provided under the terms of the GNU General Public License (GPL) version 2. You can find more details here [gnu.org/licenses](https://www.gnu.org/licenses/) and here [gnu.org/licenses/old-licenses/gpl-2.0](https://www.gnu.org/licenses/old-licenses/gpl-2.0.html).
 I used the following third party technologies for developing this app: they really simplified the job, so thank you very very much!
 
