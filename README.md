@@ -48,7 +48,7 @@ cordova build --release
 You'll find the output APKs in `platforms/android/app/build/outputs/apk/`
 
 ## Privacy
-This app does not use internet, does not show adds, does not profie users.
+This app does not use internet, does not show adds, does not profie users and its code is open source.
 
 ## Supported platforms
 * Android
