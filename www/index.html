@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<meta http-equiv="Content-type" content="text/html;charset=utf-8"/>
+		<meta name="viewport" content="user-scalable=no,initial-scale=1, maximum-scale=1, minimum-scale=1,width=device-width;"/>
+		<link rel="stylesheet" href="css/w3.css">
+		<title>sonqui</title>
+		<script type="text/javascript" charset="utf-8" src="cordova.js"></script>
+		<script type="text/javascript" charset="utf-8">
+
+			// values under this value will be considered non relevant
+			const SPEED_THRESHOLD = 5;
+
+			// geolocation global variables
+			var watchID;             // watch ID
+			var lat = '...';         // latitude
+			var lon = '...';         // longitude
+			var acc = '...';         // accurancy
+			var alt = '...';         // altitude
+			var spd = '...';         // speed m/s
+			var spk = '...';         // speed km/h
+			var head = '...';        // heading (direction)
+			var tstamp = Date.now(); // timestamp in seconds (POSIX time)
+			var tstamp_fmt = '...';  // string formatted timestamp
+
+			// round a number n to d decimans
+			function round_digits(n, d) {
+				var scale = 10 ** d;
+				return Math.round(n * scale) / scale;
+			}
+
+			// prettify null and empty values
+			// if d>=0 and the value is not null, the value is considered
+			// integer or float and will be rounded to d decimals
+			function printable(value, d) {
+				if (value === null || value == "" || value == "null") {
+					return "--";
+				} else {
+					return (d < 0) ? value : round_digits(value, d);
+				}
+			}
+
+			// return a string of two digits
+			function twonumbers(n) {
+				var r;
+				r = (n < 10) ? "0" : "";
+				return r + n;
+			}
+
+			// format a date using "YYYY-MM-DD hh:mm:ss"
+			function format_date(d) {
+				var yyyy = d.getFullYear();
+				var mm = d.getMonth() + 1;
+				var dd = d.getDate();
+				var time_hh = d.getHours();
+				var time_mm = d.getMinutes();
+				var time_ss = d.getSeconds();
+				var text = yyyy + "-" + twonumbers(mm) + "-" + twonumbers(dd) +
+					" " + twonumbers(time_hh) + ":" + twonumbers(time_mm) + ":" + twonumbers(time_ss);
+				return text;
+			}
+
+			// return the proper arrow (html entity) to be shown on the screen
+			function get_direction_entity(speed_kmh, direction) {
+				arrow = "";
+				if (typeof(speed_kmh) != "string") {
+					if (speed_kmh > SPEED_THRESHOLD) {
+						/*
+						if (direction >= 337.5 || direction < 22.5) arrow = "&uArr;"; // N
+						if (direction >= 22.5 && direction < 67,5) arrow = "&neArr;"; // NE
+						if (direction >= 67.5 && direction < 112.5) arrow = "&rArr;";  // E
+						if (direction >= 112.5 && direction < 157.5) arrow = "&seArr;"; // SE
+						if (direction >= 157.5 && direction < 202.5) arrow = "&dArr;"; // S
+						if (direction >= 202.5 && direction < 247.5) arrow = "&swArr;"; // SW
+						if (direction >= 247.5 && direction < 292.5) arrow = "&lArr;"; // W
+						if (direction >= 292.5 && direction < 337.5) arrow = "&nwArr;"; // NW
+						*/
+						if (direction >= 337.5 || direction < 22.5) arrow = "N"; // N
+						if (direction >= 22.5 && direction < 67,5) arrow = "NE"; // NE
+						if (direction >= 67.5 && direction < 112.5) arrow = "E";  // E
+						if (direction >= 112.5 && direction < 157.5) arrow = "SE"; // SE
+						if (direction >= 157.5 && direction < 202.5) arrow = "S"; // S
+						if (direction >= 202.5 && direction < 247.5) arrow = "SW"; // SW
+						if (direction >= 247.5 && direction < 292.5) arrow = "W"; // W
+						if (direction >= 292.5 && direction < 337.5) arrow = "NW"; // NW
+					}
+				}
+				return arrow;
+			}
+
+			function open_menu() {
+				document.getElementById("sonquimenu").style.display = "block";
+			}
+
+			function close_menu() {
+				document.getElementById("sonquimenu").style.display = "none";
+			}
+
+			function open_about() {
+				document.getElementById('dialog_about').style.display = 'block';
+			}
+
+			function reset_ui() {
+				document.getElementById('dialog_about').style.display='none';
+				close_menu();
+			}
+
+			function share_restore_color() {
+				var btn = document.getElementById("btn_share");
+				btn.className = btn.className.replace(" w3-white w3-hover-white", " w3-light-blue w3-hover-light-blue");
+			}
+
+			// generate text for copy/share functions
+			// the parameter optionally filters the map provider
+			function get_copy_share_text(p) {
+				var text = (p == "") ? 'Geolocation maps:\n' : 'Geolocation map from ';
+				if (p == "") text += '- ';
+				if (p == "" || p == "g") text += 'Google: https://www.google.com/maps/place/' + lat + ',' + lon + '\n';
+				if (p == "") text += '- ';
+				if (p == "" || p == "o") text += 'OSM: https://www.openstreetmap.org/?mlat=' + lat + '&mlon=' + lon + '&zoom=18\n';
+				if (p == "") text += '- ';
+				if (p == "" || p == "b") text += 'Bing: https://bing.com/maps/default.aspx?cp=' + lat + '~' + lon + '&lvl=18\n';
+				if (p == "") text += '- ';
+				if (p == "" || p == "y") text += 'Yandex: https://yandex.com/maps/?ll=' + lon + '%2C' + lat + '&pt=' + lon + '%2C' + lat + '&z=18\n';
+				text += '\n';
+				text += 'Geolocation tech details:\n';
+				text += '- latitude: ' + lat + '\n';
+				text += '- longitude: ' + lon + '\n';
+				text += '- altitude [m]: ' + alt + '\n';
+				text += '- accuracy: [m]' + acc + '\n';
+				text += '- speed [km/h]: ' + spk + '\n';
+				text += '- direction [deg]: ' + head + '\n';
+				text += '- date and time: ' + tstamp_fmt + '\n';
+				return text;
+			}
+
+			function share_all() {
+				close_menu();
+				var btn = document.getElementById("btn_share");
+				btn.className = btn.className.replace(" w3-light-blue w3-hover-light-blue", " w3-white w3-hover-white");
+				window.setTimeout(share_restore_color, 500);
+				window.plugins.socialsharing.share(get_copy_share_text(""));
+			}
+
+			function share_all_from_menu() {
+				window.plugins.socialsharing.share(text);
+				window.setTimeout(close_menu, 500);
+				window.plugins.socialsharing.share(get_copy_share_text(""));
+			}
+
+			function copy_all_restore_color() {
+				var btn = document.getElementById("btn_copy");
+				btn.className = btn.className.replace(" w3-white w3-hover-white", " w3-light-blue w3-hover-light-blue");
+			}
+
+			function copy_all() {
+				close_menu();
+				var btn = document.getElementById("btn_copy");
+				btn.className = btn.className.replace(" w3-light-blue w3-hover-light-blue", " w3-white w3-hover-white");
+				window.setTimeout(copy_all_restore_color, 500);
+				cordova.plugins.clipboard.copy(get_copy_share_text(""));
+			}
+
+			function reload_restore_color() {
+				var btn = document.getElementById("btn_reload");
+				btn.className = btn.className.replace(" w3-white w3-hover-white", " w3-light-green w3-hover-light-green");
+			}
+
+			function share_gmaps() {
+				window.plugins.socialsharing.share(get_copy_share_text("g"));
+				window.setTimeout(close_menu, 500);
+			}
+
+			function share_osm() {
+				window.plugins.socialsharing.share(get_copy_share_text("o"));
+				window.setTimeout(close_menu, 500);
+			}
+
+			function share_bing() {
+				window.plugins.socialsharing.share(get_copy_share_text("b"));
+				window.setTimeout(close_menu, 500);
+			}
+
+			function share_yandex() {
+				window.plugins.socialsharing.share(get_copy_share_text("y"));
+				window.setTimeout(close_menu, 500);
+			}
+
+			function quit() {
+				navigator.geolocation.clearWatch(watchID);
+				navigator.app.exitApp();
+				window.setTimeout(close_menu, 500); // you never know...
+			}
+
+			// accepts a position object
+			function managedata(p) {
+				text = "";
+				lat = printable(p.coords.latitude, -1);
+				lon = printable(p.coords.longitude, -1);
+				acc = printable(p.coords.accuracy, 2);
+				alt = printable(p.coords.altitude, 1);
+				spd = printable(p.coords.speed, 1);
+				spk = (typeof(spd) == "string") ? spd : printable(spd * 3.6, 0);
+				head = printable(p.coords.heading, 1);
+				tstamp = p.timestamp;
+				tstamp_fmt = format_date(new Date(tstamp));
+
+				document.getElementById("pos_lat").innerHTML = lat;
+				document.getElementById("pos_lon").innerHTML = lon;
+				document.getElementById("pos_alt").innerHTML = alt;
+				document.getElementById("pos_acc").innerHTML = acc;
+				document.getElementById("pos_spd").innerHTML = spd;
+				var speed_display = document.getElementById("pos_spk");
+				speed_display.innerHTML = spk + "&nbsp;<span class=\"w3-xxlarge w3-text-orange\">" + get_direction_entity(spk, head) + "</span>";
+				if (typeof(spk) == "string") {
+					speed_display.className = "w3-text-grey w3-jumbo";
+				} else if (parseInt(spk) < SPEED_THRESHOLD) {
+					speed_display.className = "w3-text-grey w3-jumbo";
+				} else {
+					speed_display.className = "w3-text-amber w3-jumbo";
+				}
+				document.getElementById("pos_head").innerHTML = head;
+				document.getElementById("pos_time").innerHTML = tstamp_fmt;
+			}
+
+			// onSuccess Callback
+			// This method accepts a Position object, which contains the
+			// current GPS coordinates
+			var positionsuccess = function(position) {
+				managedata(position);
+			};
+
+			function donothing() {
+				// nothing here, by design
+			}
+
+			// callback receiving a PositionError object
+			function positionerror(error) {
+				navigator.geolocation.clearWatch(watchID);
+				navigator.notification.alert("Error while reading your location. Enable geolocalization or check if your device supports it; then restart the app.", donothing, "sonqui - error", "OK");
+			}
+
+			function ondeviceready() {
+				watchID = navigator.geolocation.watchPosition(positionsuccess, positionerror, { timeout: 30000, enableHighAccuracy: true });
+				window.plugins.insomnia.keepAwake();
+			}
+
+			function startup() {
+				document.addEventListener("deviceready", ondeviceready, false);
+			}
+
+		</script>
+	</head>
+	<body class="w3-black w3-text-light-grey" onload="startup()">
+
+	<div class="w3-sidebar w3-bar-block w3-dark-grey w3-animate-left w3-medium" style="display:none" id="sonquimenu">
+		<button class="w3-bar-item w3-button w3-large w3-text-yellow" onclick="close_menu()">Close&nbsp;&nbsp;&times;</span></button>
+		<a href="#" class="w3-bar-item w3-button" onclick="share_all_from_menu()">Share all...</a>
+		<div style="padding: 8px 16px">Share one map</div>
+		<a href="#" class="w3-bar-item w3-button" onclick="share_gmaps()">&nbsp;&nbsp;&nbsp;Google</a>
+		<a href="#" class="w3-bar-item w3-button" onclick="share_osm()">&nbsp;&nbsp;&nbsp;OSM</a>
+		<a href="#" class="w3-bar-item w3-button" onclick="share_bing()">&nbsp;&nbsp;&nbsp;Bing</a>
+		<a href="#" class="w3-bar-item w3-button" onclick="share_yandex()">&nbsp;&nbsp;&nbsp;Yandex</a>
+		<a href="#" class="w3-bar-item w3-button" onclick="open_about()">App information</a>
+		<a href="#" class="w3-bar-item w3-button" onclick="quit()">Exit</a>
+	</div>
+
+	<table class="w3-table"><tr>
+		<td>
+			<button class="w3-button w3-black w3-text-light-grey w3-xlarge" onclick="open_menu()">&#9776;</button>
+			<span class="w3-text-lime w3-large">&nbsp;&nbsp;sonqui</span>
+		</td>
+		<td class="w3-right-align">
+			<button id="btn_copy" class="w3-button w3-light-blue w3-hover-light-blue w3-round w3-border w3-border-blue" onclick="copy_all()">Copy</button>
+			<button id="btn_share" class="w3-button w3-light-blue w3-hover-light-blue w3-round w3-border w3-border-blue" onclick="share_all()">Share</button>
+		</td>
+	</tr></table>
+
+	<div class="w3-container w3-responsive">
+		<b>Speed [km/h] and direction:</b><br/>
+		<b><div id="pos_spk" class="w3-text-grey w3-jumbo">...</div></b>
+		<div class="w3-tiny">&nbsp;</div>
+		<b>Location info details</b><br/>
+		latitude: <span id="pos_lat">...</span><br/>
+		longitude: <span id="pos_lon">...</span><br/>
+		altitude [m]: <span id="pos_alt">...</span><br/>
+		accuracy [m]: <span id="pos_acc">...</span><br/>
+		speed [m/s]: <span id="pos_spd">...</span><br/>
+		direction [deg]: <span id="pos_head">...</span><br/>
+		date and time: <span id="pos_time">...</span><br/>
+	</div>
+	&nbsp;<br/>
+
+	<!-- About -->
+	<div id="dialog_about" class="w3-modal">
+		<div class="w3-modal-content w3-card-4 w3-animate-bottom">
+			<header class="w3-container w3-cyan"> 
+				<span onclick="reset_ui()" class="w3-button w3-display-topright" title="Close">&times;</span>
+				<h3>sonqui - 0.9.10 beta</h3>
+			</header>
+			<div class="w3-container w3-light-blue w3-text-black w3-small">
+				<p>sonqui is a small "one-tap app" for sharing quickly geolocation
+				data with map links.</p>
+				<p><i>This software is provided under the terms of the
+				GNU General Public License (GPL) version 2. You can find more
+				details here: www.gnu.org/licenses</i></p>
+				<p>I used the following third party technologies for developing
+				this app: they really simplified the job, so thank you very very much!</p>
+				<ul>
+				<li>OpenJDK, Android Studio and Gradle Build Tool</li>
+				<li>Apache Cordova</li>
+				<li>Apache Cordova plugins: cordova-plugin-dialogs, cordova-plugin-device,
+				cordova-clipboard, cordova-plugin-x-socialsharing, cordova-plugin-geolocation,
+				cordova-plugin-app-exit cordova-plugin-insomnia</li>
+				<li>W3.CSS by W3Schools</li>
+				<li>...and special thanks to my daughter Elena for the app icon!</li>
+				</ul>
+				<p>Source code here:<br/>www.marcellozaniboni.net</p>
+			</div>
+			<footer class="w3-container w3-cyan">
+				<p>&copy; 2021 Marcello Zaniboni</p>
+			</footer>
+		</div>
+	</div>
+
+	<script type="text/javascript" charset="utf-8">
+	var modal = document.getElementById('dialog_about');
+	window.onclick = function(event) {
+		if (event.target == modal) {
+			reset_ui();
+		}
+	}
+	</script>
+
+	</body>
+</html>
