@@ -27,7 +27,7 @@ cordova plugin add cordova-plugin-geolocation
 
 Now you can get the files from GitHub and copy/replace them in the project directory.
 
-For testing quickly you can run the app in a web browser using
+For UI testing purposes quickly you can run the app in a web browser using
 
 ```
 cordova clean
