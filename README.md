@@ -14,7 +14,7 @@ Follow the guides online and install Java, Android Studio and Apache Cordova. Th
 cordova create sonqui net.marcellozaniboni.sonqui "sonqui"
 cd sonqui
 cordova platform add browser
-cordova platform add android@8.0.0 # significa Android target: android-28
+cordova platform add android@8.0.0
 cordova plugin add cordova-plugin-dialogs
 cordova plugin add cordova-plugin-device
 cordova plugin add cordova-clipboard
