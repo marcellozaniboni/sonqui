@@ -11,7 +11,7 @@ I used the following third party technologies for developing this app: they real
 * W3.CSS by W3Schools
 
 ## How to build
-Follow the guides online and install Java, Android Studio (with SDK Platforms for Android 8.0 / API Level 26 and Android 9.0 / API Level 28) and Apache Cordova. Then create the project directory:
+Follow the guides online and install Java, Android Studio (with SDK Platforms for Android 8.0 / API Level 26 and Android 9.0 / API Level 28), Gradle, Node.js, npm and Apache Cordova. Then create the project directory:
 
 ```
 cordova create sonqui net.marcellozaniboni.sonqui "sonqui"
