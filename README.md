@@ -49,3 +49,7 @@ You'll find the output APKs in `platforms/android/app/build/outputs/apk/`
 
 ## Supported platforms
 * Android
+
+## Compiled binaries
+* [sonqui-0-9-10-selfsigned.apk](https://github.com/marcellozaniboni/sonqui/releases/download/0.9.10/sonqui-0-9-10-selfsigned.apk)
+* [sonqui-0.9.10-debug.apk](https://github.com/marcellozaniboni/sonqui/releases/download/0.9.10/sonqui-0.9.10-debug.apk)
