@@ -9,7 +9,8 @@ I used the following third party technologies for developing this app: they real
 * W3.CSS by W3Schools
 
 ## How to build
-Follow the guides online and install Java, Android Studio and Apache Cordova. Then create the project directory
+Follow the guides online and install Java, Android Studio and Apache Cordova. Then create the project directory:
+
 ```
 cordova create sonqui net.marcellozaniboni.sonqui "sonqui"
 cd sonqui
@@ -21,6 +22,18 @@ cordova plugin add cordova-clipboard
 cordova plugin add cordova-plugin-x-socialsharing
 cordova plugin add cordova-plugin-geolocation
 ```
+
+Now you can get the files from GitHub and copy/replace them in the project directory.
+
+For testing you can run the app in a web browser using
+
+```
+cordova clean
+cordova build browser
+cordova run browser
+```
+
+in the web browser the app will run with limited functionalities.
 
 ## Supported platforms
 * Android
