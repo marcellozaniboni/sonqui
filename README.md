@@ -1,5 +1,5 @@
 # About sonqui
-sonqui is a small "one-tap app" for Android for sharing quickly geolocation data with map links.
+sonqui is a small Android "one-tap app" for sharing quickly geolocation data with map links.
 It gets the detailed technical geolocation data and generates map links for Google Maps, OpenStreetMap, Bing Maps, and Yandex Maps. It can also be used as a real-time speedometer.
 
 ![screenshot](assets/screenshot_sonqui_1.jpg)
