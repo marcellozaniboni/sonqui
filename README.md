@@ -52,7 +52,7 @@ You'll find the output APKs in `platforms/android/app/build/outputs/apk/`
 
 ## Privacy
 This app
-* does not use internet,
+* does not use the internet connection,
 * does not show adds and does not use ad libraries,
 * does not profie users,
 * does not use proprietary services like GMS o HMS,
